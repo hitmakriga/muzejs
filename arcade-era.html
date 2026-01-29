@@ -156,38 +156,39 @@
                     <div class="simulator">
                         <div class="simulator-screen">
                             <div id="game-display">
-                                <div class="game-title">PAC-MAN SIMULĀCIJA</div>
-                                <div class="game-grid">
-                                    <div class="pacman"></div>
-                                    <div class="dot"></div>
-                                    <div class="dot"></div>
-                                    <div class="dot"></div>
-                                    <div class="ghost red"></div>
-                                    <div class="ghost pink"></div>
+                                <!-- Pac-Man iFrame versija -->
+                                <div class="game-title">PAC-MAN SPĒLE</div>
+                                <div class="iframe-container">
+                                    <iframe 
+                                        src="https://www.classicgamesarcade.com/game/pacman.html" 
+                                        frameborder="0" 
+                                        allowfullscreen
+                                        title="Pac-Man Arcade Game"
+                                        width="100%"
+                                        height="400"
+                                        scrolling="no">
+                                    </iframe>
+                                </div>
+                                <div class="game-instructions">
+                                    <p><i class="fas fa-info-circle"></i> Instrukcijas: Izmantojiet bulttaustiņus, lai kustinātu Pac-Man apēst punktus un izvairītos no spokiem</p>
                                 </div>
                                 <div class="game-stats-sim">
-                                    <div>SCORE: <span id="score">0</span></div>
-                                    <div>LIVES: <span id="lives">3</span></div>
-                                    <div>LEVEL: <span id="level">1</span></div>
+                                    <div>SPĒLE: Pac-Man (1980)</div>
+                                    <div>IZSTRĀDĀTĀJS: Namco</div>
+                                    <div>PLATFORMA: Arkādes automāts</div>
                                 </div>
                             </div>
                         </div>
                         <div class="simulator-controls">
                             <div class="controls-info">
-                                <p>Izmantojiet taustiņus vai pieskarieties, lai vadītu Pac-Man</p>
+                                <p>Spēle tiek vadīta tieši iFrame logā. Izmantojiet bulttaustiņus, lai kustinātu Pac-Man.</p>
                             </div>
                             <div class="control-buttons">
-                                <button id="up-btn"><i class="fas fa-arrow-up"></i></button>
-                                <div class="horizontal-controls">
-                                    <button id="left-btn"><i class="fas fa-arrow-left"></i></button>
-                                    <button id="down-btn"><i class="fas fa-arrow-down"></i></button>
-                                    <button id="right-btn"><i class="fas fa-arrow-right"></i></button>
-                                </div>
+                                <button onclick="focusIframe()"><i class="fas fa-gamepad"></i> Aktivizēt spēles logu</button>
                             </div>
                             <div class="action-buttons">
-                                <button id="insert-coin"><i class="fas fa-coins"></i> Iemest monētu</button>
-                                <button id="start-game"><i class="fas fa-play"></i> Sākt spēli</button>
-                                <button id="reset-game"><i class="fas fa-redo"></i> Atiestatīt</button>
+                                <button id="fullscreen-btn"><i class="fas fa-expand"></i> Pilnekrāna režīms</button>
+                                <button onclick="location.reload()"><i class="fas fa-redo"></i> Pārlādēt spēli</button>
                             </div>
                         </div>
                     </div>
@@ -273,6 +274,27 @@
         </div>
     </footer>
 
-    <script src="exhibition.js"></script>
+    <script>
+        // Funkcija, lai fokusētu iFrame
+        function focusIframe() {
+            const iframe = document.querySelector('#game-display iframe');
+            if (iframe) {
+                iframe.focus();
+                alert('Spēles loga ir aktivizēts. Tagad varat izmantot bulttaustiņus, lai vadītu Pac-Man.');
+            }
+        }
+        
+        // Pilnekrāna režīma funkcija
+        document.getElementById('fullscreen-btn')?.addEventListener('click', function() {
+            const iframeContainer = document.querySelector('.iframe-container');
+            if (iframeContainer.requestFullscreen) {
+                iframeContainer.requestFullscreen();
+            } else if (iframeContainer.webkitRequestFullscreen) {
+                iframeContainer.webkitRequestFullscreen();
+            } else if (iframeContainer.msRequestFullscreen) {
+                iframeContainer.msRequestFullscreen();
+            }
+        });
+    </script>
 </body>
 </html>
