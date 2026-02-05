@@ -7,6 +7,419 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="exhibition2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Papildu stili VR simulators */
+        .vr-scene-builder {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .scene-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .scene-header h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+        
+        .scene-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            padding: 25px;
+            min-height: 500px;
+        }
+        
+        .vr-elements-panel {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        
+        .vr-elements-panel h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .vr-elements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .vr-element {
+            background-color: white;
+            border: 2px solid #2575fc;
+            border-radius: 8px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .vr-element:hover {
+            background-color: #eef5ff;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .vr-element i {
+            color: #6a11cb;
+            font-size: 1.2rem;
+        }
+        
+        .vr-scene {
+            background-color: #0f172a;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .vr-scene h4 {
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .scene-grid {
+            position: relative;
+            width: 100%;
+            height: 360px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            background: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .scene-object {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: move;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .scene-object:hover {
+            transform: scale(1.1);
+            z-index: 100;
+        }
+        
+        .scene-object span {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .object-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .scene-object:hover .object-controls {
+            opacity: 1;
+        }
+        
+        .control-btn {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        
+        .scene-stats {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            color: white;
+        }
+        
+        .scene-stats h5 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .stat-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .scene-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .scene-btn {
+            padding: 10px 15px;
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .scene-btn:hover {
+            background-color: #1a65e0;
+        }
+        
+        .scene-btn.reset {
+            background-color: #e74c3c;
+        }
+        
+        .scene-btn.reset:hover {
+            background-color: #d62c1a;
+        }
+        
+        .vr-preview {
+            background-color: #1e293b;
+            padding: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .preview-header h4 {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .preview-mode {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mode-btn {
+            padding: 8px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .mode-btn.active {
+            background-color: #6a11cb;
+        }
+        
+        .preview-area {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .vr-view {
+            flex: 2;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vr-view-content {
+            position: relative;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .vr-object {
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+        
+        .vr-object.mountain {
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(to bottom, #4a5568, #2d3748);
+            border-radius: 10px 10px 0 0;
+            bottom: 20px;
+        }
+        
+        .vr-object.tree {
+            width: 40px;
+            height: 80px;
+            background: linear-gradient(to bottom, #10b981, #059669);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        
+        .vr-object.building {
+            width: 70px;
+            height: 100px;
+            background: linear-gradient(to bottom, #6366f1, #4f46e5);
+            border-radius: 5px;
+        }
+        
+        .vr-object.character {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(to bottom, #f59e0b, #d97706);
+            border-radius: 20px 20px 5px 5px;
+        }
+        
+        .vr-object.vehicle {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(to bottom, #ef4444, #dc2626);
+            border-radius: 10px;
+        }
+        
+        .vr-object.animal {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(to bottom, #8b5cf6, #7c3aed);
+            border-radius: 20px;
+        }
+        
+        .vr-object.plant {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to bottom, #10b981, #059669);
+            border-radius: 50%;
+        }
+        
+        .vr-object.ufo {
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(to bottom, #06b6d4, #0891b2);
+            border-radius: 50px 50px 10px 10px;
+        }
+        
+        .preview-info {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+        }
+        
+        .preview-info h5 {
+            color: #4ecdc4;
+            margin-bottom: 15px;
+        }
+        
+        .info-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .immersion-meter {
+            margin-top: 20px;
+        }
+        
+        .meter-bar {
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+        
+        .object-info {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .object-count {
+            display: inline-block;
+            background-color: #6a11cb;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 992px) {
+            .scene-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-area {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="main-nav">
@@ -229,75 +642,123 @@
                 </div>
 
                 <div class="interactive-section">
-                    <h2><i class="fas fa-hand-pointer"></i> VR pielietojumu demonstrācija</h2>
-                    <div class="console-simulator">
-                        <div class="simulator-header">
-                            <h3>VR pielietojumu simulācija</h3>
-                            <p>Izpētiet dažādus virtuālās realitātes pielietojumus dažādās jomās</p>
+                    <h2><i class="fas fa-cube"></i> VR Scēnas veidotājs</h2>
+                    <div class="vr-scene-builder">
+                        <div class="scene-header">
+                            <h3>Izveido savu virtuālo pasauli</h3>
+                            <p>Velciet objektus uz režģa un izveidojiet unikālu VR vidi</p>
                         </div>
                         
-                        <div class="simulator-container">
-                            <div class="components-panel">
-                                <h4><i class="fas fa-th"></i> VR pielietojumi</h4>
-                                <div class="components-list">
-                                    <div class="component" data-component="gaming" draggable="true">
-                                        <i class="fas fa-gamepad"></i>
-                                        <span>Spēles</span>
+                        <div class="scene-container">
+                            <div class="vr-elements-panel">
+                                <h4><i class="fas fa-th-large"></i> VR Objekti</h4>
+                                <div class="vr-elements-list">
+                                    <div class="vr-element" data-type="mountain" data-color="#4a5568">
+                                        <i class="fas fa-mountain"></i>
+                                        <span>Kalns</span>
                                     </div>
-                                    <div class="component" data-component="education" draggable="true">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        <span>Izglītība</span>
+                                    <div class="vr-element" data-type="tree" data-color="#10b981">
+                                        <i class="fas fa-tree"></i>
+                                        <span>Koks</span>
                                     </div>
-                                    <div class="component" data-component="medicine" draggable="true">
-                                        <i class="fas fa-heartbeat"></i>
-                                        <span>Medicīna</span>
-                                    </div>
-                                    <div class="component" data-component="architecture" draggable="true">
+                                    <div class="vr-element" data-type="building" data-color="#6366f1">
                                         <i class="fas fa-building"></i>
-                                        <span>Arhitektūra</span>
+                                        <span>Ēka</span>
                                     </div>
-                                    <div class="component" data-component="training" draggable="true">
-                                        <i class="fas fa-user-graduate"></i>
-                                        <span>Apmācība</span>
+                                    <div class="vr-element" data-type="character" data-color="#f59e0b">
+                                        <i class="fas fa-user"></i>
+                                        <span>Personāžs</span>
                                     </div>
-                                    <div class="component" data-component="tourism" draggable="true">
-                                        <i class="fas fa-plane"></i>
-                                        <span>Tūrisms</span>
+                                    <div class="vr-element" data-type="vehicle" data-color="#ef4444">
+                                        <i class="fas fa-car"></i>
+                                        <span>Transportlīdzeklis</span>
+                                    </div>
+                                    <div class="vr-element" data-type="animal" data-color="#8b5cf6">
+                                        <i class="fas fa-paw"></i>
+                                        <span>Dzīvnieks</span>
+                                    </div>
+                                    <div class="vr-element" data-type="plant" data-color="#10b981">
+                                        <i class="fas fa-leaf"></i>
+                                        <span>Augs</span>
+                                    </div>
+                                    <div class="vr-element" data-type="ufo" data-color="#06b6d4">
+                                        <i class="fas fa-ufo"></i>
+                                        <span>NLO</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="scene-stats">
+                                    <h5>Scēnas statistikas</h5>
+                                    <div class="stats-grid">
+                                        <div class="stat-item" id="obj-count">Objekti: <strong>0</strong></div>
+                                        <div class="stat-item" id="scene-complexity">Sarežģītība: <strong>Zema</strong></div>
+                                        <div class="stat-item" id="scene-type">Scēnas tips: <strong>Nav</strong></div>
+                                        <div class="stat-item" id="render-load">Renderēšana: <strong>0%</strong></div>
+                                    </div>
+                                    
+                                    <div class="scene-buttons">
+                                        <button class="scene-btn" id="clear-scene">
+                                            <i class="fas fa-trash"></i> Notīrīt
+                                        </button>
+                                        <button class="scene-btn reset" id="random-scene">
+                                            <i class="fas fa-random"></i> Nejauša scēna
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="console-case">
-                                <h4><i class="fas fa-vr-cardboard"></i> VR pieredzes zona</h4>
-                                <div class="case-inner" id="drop-zone">
-                                    <div class="empty-message">
+                            <div class="vr-scene">
+                                <h4><i class="fas fa-vr-cardboard"></i> Virtuālā vide</h4>
+                                <div class="scene-grid" id="scene-grid">
+                                    <div class="empty-scene-message">
+                                        <p>Velciet objektus šeit, lai izveidotu savu virtuālo pasauli</p>
                                         <i class="fas fa-arrow-left"></i>
-                                        <p>Velciet pielietojumus šeit, lai izveidotu VR pieredzi</p>
                                     </div>
-                                    <div class="components-placed" id="components-placed"></div>
-                                </div>
-                                <div class="console-stats">
-                                    <h5>VR pieredzes detaļas:</h5>
-                                    <div class="stats-list" id="console-stats">
-                                        <p>Vēl nav pievienoti pielietojumi</p>
-                                    </div>
-                                    <button id="reset-build" class="btn-reset">
-                                        <i class="fas fa-redo"></i> Sākt no jauna
-                                    </button>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="generation-selector">
-                            <h4><i class="fas fa-sliders-h"></i> VR tehnoloģijas līmenis</h4>
-                            <div class="generation-buttons">
-                                <button class="gen-btn active" data-gen="basic">Pamatlīmenis</button>
-                                <button class="gen-btn" data-gen="advanced">Uzlabots</button>
-                                <button class="gen-btn" data-gen="professional">Profesionāls</button>
-                                <button class="gen-btn" data-gen="future">Nākotnes tehnoloģijas</button>
+                        <div class="vr-preview">
+                            <div class="preview-header">
+                                <h4><i class="fas fa-eye"></i> VR Priekšskatījums</h4>
+                                <div class="preview-mode">
+                                    <button class="mode-btn active" data-mode="normal">Normāls</button>
+                                    <button class="mode-btn" data-mode="wireframe">Vadotnes</button>
+                                    <button class="mode-btn" data-mode="night">Nakts režīms</button>
+                                </div>
                             </div>
-                            <div class="generation-info" id="generation-info">
-                                <p><strong>Pamatlīmenis</strong>: 3DOF, vienkārša grafika, mobilās ierīces, ierobežota interaktivitāte.</p>
+                            
+                            <div class="preview-area">
+                                <div class="vr-view">
+                                    <div class="vr-view-content" id="vr-preview">
+                                        <!-- Šeit tiks attēloti VR objekti -->
+                                        <div class="vr-object mountain" style="left: 50px; bottom: 20px;"></div>
+                                        <div class="vr-object tree" style="left: 120px; bottom: 20px;"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="preview-info">
+                                    <h5>Scēnas informācija</h5>
+                                    <div class="info-text">
+                                        <p>Jūsu izveidotā VR vide ir sagatavota priekšskatīšanai. Katrs objekts piedāvā unikālu mijiedarbību virtuālajā pasaulē.</p>
+                                        <p><strong>Objekti scēnā:</strong> <span id="preview-obj-count">0</span></p>
+                                    </div>
+                                    
+                                    <div class="immersion-meter">
+                                        <p>Imersivitātes līmenis:</p>
+                                        <div class="meter-bar">
+                                            <div class="meter-fill" id="immersion-fill" style="width: 0%"></div>
+                                        </div>
+                                        <div class="meter-label">
+                                            <span>Zema</span>
+                                            <span>Augsta</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="object-info">
+                                        <p><strong>Padoms:</strong> Pievienojiet vairāk objektu, lai palielinātu scēnas imersivitāti. Daudzveidīgas formas un krāsas rada interesantāku VR pieredzi.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -381,6 +842,448 @@
         </div>
     </footer>
 
-    <script src="virtual-reality.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // VR Scēnas veidotājs
+            const vrElements = document.querySelectorAll('.vr-element');
+            const sceneGrid = document.getElementById('scene-grid');
+            const clearSceneBtn = document.getElementById('clear-scene');
+            const randomSceneBtn = document.getElementById('random-scene');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const vrPreview = document.getElementById('vr-preview');
+            
+            // Statistikas elementi
+            const objCountElement = document.getElementById('obj-count');
+            const sceneComplexityElement = document.getElementById('scene-complexity');
+            const sceneTypeElement = document.getElementById('scene-type');
+            const renderLoadElement = document.getElementById('render-load');
+            const previewObjCountElement = document.getElementById('preview-obj-count');
+            const immersionFillElement = document.getElementById('immersion-fill');
+            
+            let sceneObjects = [];
+            let objectIdCounter = 0;
+            let currentMode = 'normal';
+            
+            // Inicializācija
+            function init() {
+                setupDragAndDrop();
+                setupButtons();
+                updateSceneStats();
+                
+                // Pievieno pāris objektus sākumam
+                addObjectToScene('mountain', '#4a5568', 100, 100);
+                addObjectToScene('tree', '#10b981', 200, 200);
+            }
+            
+            // Iestata velkšanas un nomešanas funkcionalitāti
+            function setupDragAndDrop() {
+                vrElements.forEach(element => {
+                    element.addEventListener('dragstart', function(e) {
+                        const type = this.dataset.type;
+                        const color = this.dataset.color;
+                        e.dataTransfer.setData('type', type);
+                        e.dataTransfer.setData('color', color);
+                        this.classList.add('dragging');
+                    });
+                    
+                    element.addEventListener('dragend', function() {
+                        this.classList.remove('dragging');
+                    });
+                });
+                
+                // Nomešanas zona
+                sceneGrid.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                
+                sceneGrid.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                
+                sceneGrid.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    const type = e.dataTransfer.getData('type');
+                    const color = e.dataTransfer.getData('color');
+                    
+                    // Aprēķina pozīciju režģī
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    addObjectToScene(type, color, x, y);
+                });
+            }
+            
+            // Pievieno objektu scēnai
+            function addObjectToScene(type, color, x, y) {
+                // Noņem tukšā scēnas ziņojumu
+                const emptyMessage = sceneGrid.querySelector('.empty-scene-message');
+                if (emptyMessage) {
+                    emptyMessage.style.display = 'none';
+                }
+                
+                objectIdCounter++;
+                const id = `obj-${objectIdCounter}`;
+                
+                // Objekta ikona atkarībā no tipa
+                let icon = 'fa-cube';
+                let label = 'Objekts';
+                
+                switch(type) {
+                    case 'mountain': icon = 'fa-mountain'; label = 'Kalns'; break;
+                    case 'tree': icon = 'fa-tree'; label = 'Koks'; break;
+                    case 'building': icon = 'fa-building'; label = 'Ēka'; break;
+                    case 'character': icon = 'fa-user'; label = 'Personāžs'; break;
+                    case 'vehicle': icon = 'fa-car'; label = 'Transportlīdzeklis'; break;
+                    case 'animal': icon = 'fa-paw'; label = 'Dzīvnieks'; break;
+                    case 'plant': icon = 'fa-leaf'; label = 'Augs'; break;
+                    case 'ufo': icon = 'fa-ufo'; label = 'NLO'; break;
+                }
+                
+                // Izveido objekta elementu
+                const objectElement = document.createElement('div');
+                objectElement.className = 'scene-object';
+                objectElement.id = id;
+                objectElement.dataset.type = type;
+                objectElement.dataset.color = color;
+                objectElement.style.left = `${x - 30}px`;
+                objectElement.style.top = `${y - 30}px`;
+                objectElement.style.backgroundColor = color;
+                objectElement.draggable = true;
+                
+                // Nejauša rotācija dabiskākam izskatam
+                const rotation = Math.floor(Math.random() * 360);
+                objectElement.style.transform = `rotate(${rotation}deg)`;
+                
+                objectElement.innerHTML = `
+                    <i class="fas ${icon}"></i>
+                    <span>${label}</span>
+                    <div class="object-controls">
+                        <button class="control-btn delete-btn" title="Dzēst">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button class="control-btn clone-btn" title="Klonēt">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `;
+                
+                sceneGrid.appendChild(objectElement);
+                
+                // Saglabā objekta datus
+                sceneObjects.push({
+                    id,
+                    type,
+                    color,
+                    x: x - 30,
+                    y: y - 30
+                });
+                
+                // Pievieno velkšanas funkcionalitāti
+                makeObjectDraggable(objectElement);
+                
+                // Pievieno notikumu dzēšanas pogai
+                const deleteBtn = objectElement.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    removeObjectFromScene(id);
+                });
+                
+                // Pievieno notikumu klonēšanas pogai
+                const cloneBtn = objectElement.querySelector('.clone-btn');
+                cloneBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    cloneObject(id);
+                });
+                
+                // Atjauno statistikas un priekšskatījumu
+                updateSceneStats();
+                updateVrPreview();
+                
+                showMessage(`Pievienots: ${label}`, 'success');
+            }
+            
+            // Padara objektu velkamu
+            function makeObjectDraggable(element) {
+                let isDragging = false;
+                let offsetX, offsetY;
+                
+                element.addEventListener('mousedown', startDrag);
+                
+                function startDrag(e) {
+                    if (e.target.classList.contains('control-btn')) return;
+                    
+                    isDragging = true;
+                    
+                    const rect = element.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                    
+                    document.addEventListener('mousemove', drag);
+                    document.addEventListener('mouseup', stopDrag);
+                    
+                    element.style.zIndex = '1000';
+                }
+                
+                function drag(e) {
+                    if (!isDragging) return;
+                    
+                    const rect = sceneGrid.getBoundingClientRect();
+                    let x = e.clientX - rect.left - offsetX;
+                    let y = e.clientY - rect.top - offsetY;
+                    
+                    // Ierobežo robežās
+                    x = Math.max(0, Math.min(x, rect.width - 60));
+                    y = Math.max(0, Math.min(y, rect.height - 60));
+                    
+                    element.style.left = `${x}px`;
+                    element.style.top = `${y}px`;
+                    
+                    // Atjauno objekta datus
+                    const id = element.id;
+                    const objIndex = sceneObjects.findIndex(obj => obj.id === id);
+                    if (objIndex !== -1) {
+                        sceneObjects[objIndex].x = x;
+                        sceneObjects[objIndex].y = y;
+                    }
+                    
+                    updateVrPreview();
+                }
+                
+                function stopDrag() {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', drag);
+                    document.removeEventListener('mouseup', stopDrag);
+                    element.style.zIndex = '10';
+                    
+                    updateSceneStats();
+                }
+            }
+            
+            // Noņem objektu no scēnas
+            function removeObjectFromScene(id) {
+                const objectElement = document.getElementById(id);
+                if (objectElement) {
+                    objectElement.remove();
+                }
+                
+                sceneObjects = sceneObjects.filter(obj => obj.id !== id);
+                
+                updateSceneStats();
+                updateVrPreview();
+                
+                showMessage('Objekts dzēsts', 'info');
+                
+                // Ja vairs nav objektu, rāda tukšā scēnas ziņojumu
+                if (sceneObjects.length === 0) {
+                    const emptyMessage = sceneGrid.querySelector('.empty-scene-message');
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'flex';
+                    }
+                }
+            }
+            
+            // Klonē objektu
+            function cloneObject(id) {
+                const originalObj = sceneObjects.find(obj => obj.id === id);
+                if (!originalObj) return;
+                
+                const newX = originalObj.x + 20;
+                const newY = originalObj.y + 20;
+                
+                addObjectToScene(originalObj.type, originalObj.color, newX + 30, newY + 30);
+            }
+            
+            // Atjauno scēnas statistiku
+            function updateSceneStats() {
+                const objCount = sceneObjects.length;
+                
+                // Atjauno objektu skaitu
+                objCountElement.innerHTML = `Objekti: <strong>${objCount}</strong>`;
+                previewObjCountElement.textContent = objCount;
+                
+                // Aprēķina sarežģītību
+                let complexity = 'Zema';
+                if (objCount >= 5) complexity = 'Vidēja';
+                if (objCount >= 10) complexity = 'Augsta';
+                sceneComplexityElement.innerHTML = `Sarežģītība: <strong>${complexity}</strong>`;
+                
+                // Nosaka scēnas tipu
+                let sceneType = 'Nav';
+                const types = sceneObjects.map(obj => obj.type);
+                const uniqueTypes = [...new Set(types)];
+                
+                if (objCount > 0) {
+                    if (types.includes('mountain') && types.includes('tree')) {
+                        sceneType = 'Daba';
+                    } else if (types.includes('building') && types.includes('vehicle')) {
+                        sceneType = 'Pilsēta';
+                    } else if (types.includes('ufo') || types.includes('character')) {
+                        sceneType = 'Fantāzija';
+                    } else {
+                        sceneType = 'Jaukta';
+                    }
+                }
+                sceneTypeElement.innerHTML = `Scēnas tips: <strong>${sceneType}</strong>`;
+                
+                // Aprēķina renderēšanas slodzi
+                const renderLoad = Math.min(objCount * 8, 100);
+                renderLoadElement.innerHTML = `Renderēšana: <strong>${renderLoad}%</strong>`;
+                
+                // Atjauno imersivitātes līmeni
+                const immersionLevel = Math.min(objCount * 10, 100);
+                immersionFillElement.style.width = `${immersionLevel}%`;
+            }
+            
+            // Atjauno VR priekšskatījumu
+            function updateVrPreview() {
+                // Notīra priekšskatījumu
+                vrPreview.innerHTML = '';
+                
+                // Pievieno objektus priekšskatījumam
+                sceneObjects.forEach(obj => {
+                    const previewObj = document.createElement('div');
+                    previewObj.className = `vr-object ${obj.type}`;
+                    
+                    // Pārrēķina pozīciju priekšskatījumam
+                    const rect = sceneGrid.getBoundingClientRect();
+                    const previewWidth = vrPreview.offsetWidth;
+                    const previewHeight = vrPreview.offsetHeight;
+                    
+                    const x = (obj.x / rect.width) * previewWidth;
+                    const y = (obj.y / rect.height) * previewHeight;
+                    
+                    previewObj.style.left = `${x}px`;
+                    previewObj.style.top = `${y}px`;
+                    
+                    // Pielāgo stilu atkarībā no režīma
+                    if (currentMode === 'wireframe') {
+                        previewObj.style.background = 'transparent';
+                        previewObj.style.border = '2px solid #4ecdc4';
+                    } else if (currentMode === 'night') {
+                        previewObj.style.filter = 'brightness(0.6)';
+                    }
+                    
+                    vrPreview.appendChild(previewObj);
+                });
+            }
+            
+            // Iestata pogas
+            function setupButtons() {
+                // Notīrīšanas poga
+                clearSceneBtn.addEventListener('click', function() {
+                    sceneObjects.forEach(obj => {
+                        const objectElement = document.getElementById(obj.id);
+                        if (objectElement) {
+                            objectElement.remove();
+                        }
+                    });
+                    
+                    sceneObjects = [];
+                    
+                    // Rāda tukšā scēnas ziņojumu
+                    const emptyMessage = sceneGrid.querySelector('.empty-scene-message');
+                    if (emptyMessage) {
+                        emptyMessage.style.display = 'flex';
+                    }
+                    
+                    updateSceneStats();
+                    updateVrPreview();
+                    
+                    showMessage('Scēna notīrīta', 'info');
+                });
+                
+                // Nejaušās scēnas poga
+                randomSceneBtn.addEventListener('click', function() {
+                    // Notīra esošo scēnu
+                    sceneObjects.forEach(obj => {
+                        const objectElement = document.getElementById(obj.id);
+                        if (objectElement) {
+                            objectElement.remove();
+                        }
+                    });
+                    
+                    sceneObjects = [];
+                    
+                    // Pievieno 5-8 nejaušus objektus
+                    const objTypes = ['mountain', 'tree', 'building', 'character', 'vehicle', 'animal', 'plant', 'ufo'];
+                    const colors = ['#4a5568', '#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#10b981', '#06b6d4'];
+                    
+                    const objCount = Math.floor(Math.random() * 4) + 5; // 5-8 objekti
+                    
+                    for (let i = 0; i < objCount; i++) {
+                        const typeIndex = Math.floor(Math.random() * objTypes.length);
+                        const type = objTypes[typeIndex];
+                        const color = colors[typeIndex];
+                        
+                        const x = Math.floor(Math.random() * (sceneGrid.offsetWidth - 100)) + 50;
+                        const y = Math.floor(Math.random() * (sceneGrid.offsetHeight - 100)) + 50;
+                        
+                        addObjectToScene(type, color, x, y);
+                    }
+                    
+                    showMessage(`Izveidota nejauša scēna ar ${objCount} objektiem`, 'success');
+                });
+                
+                // Režīma pogas
+                modeButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        modeButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        currentMode = this.dataset.mode;
+                        updateVrPreview();
+                        
+                        showMessage(`Pārslēgts uz ${this.textContent} režīmu`, 'info');
+                    });
+                });
+            }
+            
+            // Parāda ziņojumu
+            function showMessage(message, type = 'info') {
+                // Izveido vai atjauno ziņojumu elementu
+                let messageElement = document.querySelector('.scene-message');
+                
+                if (!messageElement) {
+                    messageElement = document.createElement('div');
+                    messageElement.className = 'scene-message';
+                    document.querySelector('.vr-scene-builder').prepend(messageElement);
+                }
+                
+                // Iestata ziņojuma stilus atkarībā no tipa
+                let backgroundColor = '#2c3e50';
+                if (type === 'success') backgroundColor = '#27ae60';
+                if (type === 'warning') backgroundColor = '#f39c12';
+                if (type === 'info') backgroundColor = '#2575fc';
+                
+                messageElement.textContent = message;
+                messageElement.style.display = 'block';
+                messageElement.style.backgroundColor = backgroundColor;
+                messageElement.style.color = 'white';
+                messageElement.style.padding = '12px 20px';
+                messageElement.style.borderRadius = '5px';
+                messageElement.style.marginBottom = '15px';
+                messageElement.style.textAlign = 'center';
+                messageElement.style.fontWeight = 'bold';
+                messageElement.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+                messageElement.style.position = 'absolute';
+                messageElement.style.top = '10px';
+                messageElement.style.left = '50%';
+                messageElement.style.transform = 'translateX(-50%)';
+                messageElement.style.zIndex = '1000';
+                
+                // Paslēp ziņojumu pēc 3 sekundēm
+                setTimeout(() => {
+                    messageElement.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Sākuma inicializācija
+            init();
+        });
+    </script>
 </body>
 </html>
